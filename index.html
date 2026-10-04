@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажер часу - Частина доби (Випадкові питання)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Додаткові стилі для ідеального вміщення таблиці */
+        .compact-table td {
+            padding: 0.35rem 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-200 text-slate-800 h-screen flex items-center justify-center p-2 md:p-6 m-0">
+
+    <!-- Головний єдиний блок додатку -->
+    <div class="bg-white w-full max-w-7xl h-full max-h-[96vh] rounded-3xl shadow-xl flex flex-col md:flex-row overflow-hidden border border-slate-300">
+        
+        <!-- Ліва частина: Вікторина -->
+        <div class="flex-1 flex flex-col p-6 md:p-10 overflow-y-auto relative justify-center">
+            <div id="quiz-container" class="w-full max-w-2xl mx-auto text-center">
+                <!-- Нумерація питань -->
+                <div id="question-counter" class="text-sm font-bold text-slate-400 mb-6 uppercase tracking-wider">Питання 1 / 10</div>
+                
+                <h2 class="text-2xl font-semibold mb-4 text-slate-700">Яка частина доби?</h2>
+                
+                <!-- Час у 24-годинному форматі -->
+                <div class="mb-8">
+                    <span id="time-display" class="text-5xl md:text-6xl font-black text-slate-800 font-mono tracking-widest bg-slate-50 px-8 py-4 rounded-2xl border border-slate-200 inline-block shadow-sm">
+                        <!-- Згенерується через JS -->
+                    </span>
+                </div>
+
+                <!-- 4 варіанти відповіді (сітка 2x2) -->
+                <div id="options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-lg mx-auto">
+                    <!-- Кнопки генеруються через JS -->
+                </div>
+
+                <!-- Контейнер для кнопки наступного питання з фіксованою висотою (щоб не стрибав контент) -->
+                <div class="h-14 w-full max-w-lg mx-auto">
+                    <button id="next-btn" onclick="nextQuestion()" class="opacity-0 pointer-events-none transition-opacity duration-300 w-full h-full bg-slate-800 text-white rounded-xl font-bold text-lg hover:bg-slate-700 shadow-md">
+                        Наступне питання
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Права частина: Довідкова таблиця на 24 години -->
+        <div class="w-full md:w-[390px] bg-white border-l border-slate-200 flex flex-col h-full overflow-hidden">
+            <div class="flex-1 overflow-y-auto flex flex-col justify-center p-4 text-[0.8rem] lg:text-xs">
+                
+                <!-- Рамка таблиці -->
+                <div class="border-2 border-slate-400 rounded-xl overflow-hidden shadow-sm my-auto bg-white">
+                    <table class="w-full border-collapse compact-table">
+                        <tbody>
+                            <!-- НІЧ (4 години) -->
+                            <tr class="border-b border-slate-100">
+                                <td class="font-mono text-slate-700 w-2/3 pl-3">00:00 північ</td>
+                                <td class="bg-gray-100 text-center border-l-2 border-slate-200" rowspan="4">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <span class="text-2xl mb-1">🌙</span>
+                                        <span class="font-bold text-gray-700">ніч</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">01:00 перша ночі</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">02:00 друга ночі</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">03:00 третя ночі</td></tr>
+
+                            <!-- РАНОК (8 годин) - Товста лінія зверху -->
+                            <tr class="border-b border-slate-100 border-t-2 border-t-slate-400">
+                                <td class="font-mono text-slate-700 pl-3">04:00 четверта ранку</td>
+                                <td class="bg-green-100 text-center border-l-2 border-slate-200" rowspan="8">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <span class="text-2xl mb-1">🌅</span>
+                                        <span class="font-bold text-green-800">ранок</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">05:00 п'ята ранку</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">06:00 шоста ранку</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">07:00 сьома ранку</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">08:00 восьма ранку</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">09:00 дев'ята ранку</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">10:00 десята ранку</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">11:00 одинадцята ранку</td></tr>
+
+                            <!-- ДЕНЬ (5 годин) - Товста лінія зверху -->
+                            <tr class="border-b border-slate-100 border-t-2 border-t-slate-400">
+                                <td class="font-mono text-slate-700 pl-3">12:00 дванадцята дня</td>
+                                <td class="bg-orange-100 text-center border-l-2 border-slate-200" rowspan="5">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <span class="text-2xl mb-1">☀️</span>
+                                        <span class="font-bold text-orange-800">день</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">13:00 перша дня</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">14:00 друга дня</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">15:00 третя дня</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">16:00 четверта дня</td></tr>
+
+                            <!-- ВЕЧІР (7 годин) - Товста лінія зверху -->
+                            <tr class="border-b border-slate-100 border-t-2 border-t-slate-400">
+                                <td class="font-mono text-slate-700 pl-3">17:00 п'ята вечора</td>
+                                <td class="bg-purple-100 text-center border-l-2 border-slate-200" rowspan="7">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <span class="text-2xl mb-1">🌇</span>
+                                        <span class="font-bold text-purple-800">вечір</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">18:00 шоста вечора</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">19:00 сьома вечора</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">20:00 восьма вечора</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">21:00 дев'ята вечора</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">22:00 десята вечора</td></tr>
+                            <tr class="border-b border-slate-100"><td class="font-mono text-slate-700 pl-3">23:00 одинадцята вечора</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const allOptions = ["Ранок", "День", "Вечір", "Ніч"];
+        
+        // Функція для визначення правильної частини доби за годиною
+        function getPartOfDay(hour) {
+            if (hour >= 0 && hour <= 3) return "Ніч";
+            if (hour >= 4 && hour <= 11) return "Ранок";
+            if (hour >= 12 && hour <= 16) return "День";
+            if (hour >= 17 && hour <= 23) return "Вечір";
+        }
+
+        // Функція для генерації випадкових питань
+        function generateRandomQuestions(count) {
+            const generatedQuestions = [];
+            for (let i = 0; i < count; i++) {
+                const h = Math.floor(Math.random() * 24);
+                const m = Math.floor(Math.random() * 60);
+                
+                // Форматуємо у вигляді 00:00
+                const timeString = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+                const correctAnswer = getPartOfDay(h);
+                
+                generatedQuestions.push({
+                    time: timeString,
+                    correct: correctAnswer
+                });
+            }
+            return generatedQuestions;
+        }
+
+        // Генеруємо 10 випадкових питань при завантаженні сторінки
+        const questions = generateRandomQuestions(10);
+        let currentIndex = 0;
+
+        function loadQuestion() {
+            if (currentIndex >= questions.length) {
+                document.getElementById('quiz-container').innerHTML = `
+                    <div class="text-center py-16">
+                        <h2 class="text-4xl font-bold text-slate-700 mb-4">Чудова робота! 🥳</h2>
+                        <p class="text-slate-500 text-xl">Ви успішно виконали всі завдання.</p>
+                        <button onclick="location.reload()" class="mt-8 py-3 px-8 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-md">
+                            Спробувати ще раз
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = questions[currentIndex];
+            
+            // Оновлення нумерації та часу
+            document.getElementById('question-counter').innerText = 'Питання ' + (currentIndex + 1) + ' / ' + questions.length;
+            document.getElementById('time-display').innerText = q.time;
+
+            // Генерація кнопок з варіантами
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+
+            // Перемішуємо 4 варіанти (Ранок, День, Вечір, Ніч)
+            let shuffledOptions = [...allOptions].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'py-4 px-6 bg-slate-50 border-2 border-slate-300 rounded-xl font-semibold text-lg text-slate-700 hover:bg-slate-100 hover:border-slate-400 transition shadow-sm';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, q.correct, btn);
+                grid.appendChild(btn);
+            });
+
+            // Ховаємо кнопку наступного питання за допомогою opacity (щоб місце на екрані залишалось зарезервованим)
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.add('opacity-0', 'pointer-events-none');
+            nextBtn.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+
+        function checkAnswer(selected, correct, button) {
+            if (selected === correct) {
+                // ПРАВИЛЬНА ВІДПОВІДЬ
+                const buttons = document.getElementById('options-grid').querySelectorAll('button');
+                buttons.forEach(b => b.disabled = true); // Блокуємо всі кнопки
+
+                button.classList.remove('bg-slate-50', 'border-slate-300', 'text-slate-700', 'hover:bg-slate-100', 'hover:border-slate-400');
+                button.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-800');
+                
+                // Показуємо кнопку «Наступне питання» плавно
+                const nextBtn = document.getElementById('next-btn');
+                nextBtn.classList.remove('opacity-0', 'pointer-events-none');
+                nextBtn.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                // НЕПРАВИЛЬНА ВІДПОВІДЬ
+                button.disabled = true; // Блокуємо ТІЛЬКИ цю кнопку
+
+                button.classList.remove('bg-slate-50', 'border-slate-300', 'text-slate-700', 'hover:bg-slate-100', 'hover:border-slate-400');
+                button.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-400', 'opacity-70', 'cursor-not-allowed');
+                
+                // Не показуємо правильну відповідь, не показуємо кнопку "Наступне питання"
+            }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            loadQuestion();
+        }
+
+        // Запуск першого питання
+        loadQuestion();
+    </script>
+</body>
+</html>
